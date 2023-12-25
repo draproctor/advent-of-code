@@ -27,6 +27,14 @@ pub fn solve(path: PathBuf) {
     println!("The total power of the games is {}", power_total);
 }
 
+/// Represents a game an elf wants to play with us.
+///
+/// A game is played with a bag of colored cubes. In one game session, the elf will reach into the
+/// bag an unknown number of times. Each time the elf grabs a random number of cubes.
+///
+/// A game is "possible" if the number of cubes for each color do not exceed a threshold.
+/// E.g., if there is a limit of 10 red cubes and the elf draws 12 red cubes in one game session,
+/// then we know it's "impossible" for there to be only 10 red cubes in the bag.
 #[derive(Debug, PartialEq)]
 struct Game {
     id: i32,
@@ -34,6 +42,8 @@ struct Game {
 }
 
 impl Game {
+    /// Returns true if all of the cube draws made for a game are below a threshold,
+    /// one threshold for each color of cube.
     fn is_possible(&self) -> bool {
         self.cube_draws.iter().all(|draw| {
             draw.red_cubes <= RED_LIMIT
@@ -42,6 +52,10 @@ impl Game {
         })
     }
 
+    /// Returns the power of a game.
+    /// A power is calculated by finding the highest numbers of cubes drawn for a given color and
+    /// multiplying the values for all cubes together.
+    /// If one color is never drawn in a game, only the other maximum cube counts are considered.
     fn power(&self) -> i32 {
         let max_red_cubes = self
             .cube_draws
@@ -117,6 +131,12 @@ fn get_game_id(line: &str) -> i32 {
         .unwrap_or(0)
 }
 
+/// Parse a line of text and return a vec of the CubeDraws in that line.
+///
+/// In this example, all text after the colon is the cube draws made by the elf.
+/// ```
+/// "Game 63: 4 red, 6 blue, 2 green; 3 green, 1 red, 5 blue; 7 blue, 5 green"
+/// ```
 fn get_cube_draws(line: &str) -> Vec<CubeDraw> {
     let cube_draws = line.split(':').last().unwrap_or("");
     if cube_draws.is_empty() {
