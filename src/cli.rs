@@ -12,5 +12,10 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     /// Adds files to myapp
-    Day1 { path: PathBuf },
+    Day1 {
+        path: PathBuf,
+    },
+    Day2 {
+        path: PathBuf,
+    },
 }

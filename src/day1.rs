@@ -1,6 +1,7 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Lines};
 use std::path::PathBuf;
+
+use crate::io::LineExtractor;
 
 const NUMBERS: [(&str, &str); 9] = [
     ("one", "1"),
@@ -13,17 +14,6 @@ const NUMBERS: [(&str, &str); 9] = [
     ("eight", "8"),
     ("nine", "9"),
 ];
-
-trait LineExtractor {
-    fn lines(&self) -> Lines<BufReader<&File>>;
-}
-
-impl LineExtractor for File {
-    /// Return an iterator for reading the lines of a given file.
-    fn lines(&self) -> Lines<BufReader<&File>> {
-        BufReader::new(self).lines()
-    }
-}
 
 pub fn solve(file_path: PathBuf) {
     let total: i32 = File::open(file_path)
