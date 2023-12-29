@@ -14,11 +14,24 @@ pub fn solve(path: PathBuf) {
         .map(Result::unwrap)
         .collect::<Vec<String>>();
 
-    let part_number_sum = symbol_tracker(content)
+    let symbol_tracker = symbol_tracker(content);
+    let part_number_sum = &symbol_tracker
         .values()
         .map(|numbers| numbers.iter().sum::<i32>())
         .sum::<i32>();
+    let power_of_parts_touching_gears = &symbol_tracker
+        .values()
+        .filter(|parts| parts.len() == 2)
+        .filter_map(|parts| {
+            if parts.len() == 2 {
+                Some(parts.iter().product::<i32>())
+            } else {
+                None
+            }
+        })
+        .sum::<i32>();
     println!("Sum of part numbers touching symbols: {part_number_sum}");
+    println!("Power of parts touching gears: {power_of_parts_touching_gears}");
 }
 
 fn symbol_tracker(content: Vec<String>) -> HashMap<(i32, i32), Vec<i32>> {
