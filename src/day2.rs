@@ -7,24 +7,27 @@ const RED_LIMIT: i32 = 12;
 const GREEN_LIMIT: i32 = 13;
 const BLUE_LIMIT: i32 = 14;
 
-pub fn solve(path: PathBuf) {
-    let id_total: i32 = File::open(&path)
+pub fn solve(path: &PathBuf) {
+    let id_total: i32 = File::open(path)
         .expect("Cannot read the file")
         .lines()
         .map(|line| Game::from(line.unwrap()))
-        .filter_map(|game| match game.is_possible() {
-            true => Some(game.id),
-            false => None,
+        .filter_map(|game| {
+            if game.is_possible() {
+                Some(game.id)
+            } else {
+                None
+            }
         })
         .sum();
-    println!("The total of the possible game IDs is {}", id_total);
+    println!("The total of the possible game IDs is {id_total}");
 
-    let power_total: i32 = File::open(&path)
+    let power_total: i32 = File::open(path)
         .expect("Cannot read the file")
         .lines()
         .map(|line| Game::from(line.unwrap()).power())
         .sum();
-    println!("The total power of the games is {}", power_total);
+    println!("The total power of the games is {power_total}");
 }
 
 /// Represents a game an elf wants to play with us.
@@ -109,7 +112,7 @@ impl From<&str> for CubeDraw {
                 "red" => red_cubes += count,
                 "green" => green_cubes += count,
                 "blue" => blue_cubes += count,
-                _ => return,
+                _ => (),
             };
         });
 
@@ -124,14 +127,14 @@ impl From<&str> for CubeDraw {
 /// Given a string slice, return the first number encountered.
 fn get_game_id(line: &str) -> i32 {
     line.chars()
-        .skip_while(|c| !c.is_ascii_digit())
-        .take_while(|c| c.is_ascii_digit())
+        .skip_while(|ch| !ch.is_ascii_digit())
+        .take_while(char::is_ascii_digit)
         .collect::<String>()
         .parse()
         .unwrap_or(0)
 }
 
-/// Parse a line of text and return a vec of the CubeDraws in that line.
+/// Parse a line of text and return a vec of the `CubeDraws` in that line.
 ///
 /// In this example, all text after the colon is the cube draws made by the elf.
 /// ```
@@ -142,7 +145,7 @@ fn get_cube_draws(line: &str) -> Vec<CubeDraw> {
     if cube_draws.is_empty() {
         return vec![];
     }
-    cube_draws.split(';').map(|s| CubeDraw::from(s)).collect()
+    cube_draws.split(';').map(CubeDraw::from).collect()
 }
 
 #[cfg(test)]

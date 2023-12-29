@@ -19,9 +19,9 @@ pub fn solve(file_path: PathBuf) {
     let total: i32 = File::open(file_path)
         .expect("Cannot read the file")
         .lines()
-        .map(|line| parse_line(line.unwrap()))
+        .map(|line| parse_line(&line.unwrap()))
         .sum();
-    println!("The total is {}", total);
+    println!("The total is {total}");
 }
 
 /// Given a line in a file, find the first and last numbers in the line. The digits are combined
@@ -36,11 +36,11 @@ pub fn solve(file_path: PathBuf) {
 /// assert_eq!(parse_line(line2), 47);
 /// assert_eq!(parse_line(line3), 42);
 /// ```
-fn parse_line(line: String) -> i32 {
-    let numbers = extract_numbers(&line);
+fn parse_line(line: &str) -> i32 {
+    let numbers = extract_numbers(line);
     let first_number = numbers.first().unwrap();
     let second_number = numbers.last().unwrap();
-    format!("{}{}", first_number, second_number)
+    format!("{first_number}{second_number}")
         .parse::<i32>()
         .unwrap()
 }
@@ -48,7 +48,7 @@ fn parse_line(line: String) -> i32 {
 /// Given a string, extract all number literals and written out numbers.
 fn extract_numbers(line: &str) -> Vec<String> {
     line.char_indices()
-        .filter_map(|(index, c)| find_number_string(index, c, &line))
+        .filter_map(|(index, c)| find_number_string(index, c, line))
         .collect()
 }
 
@@ -73,9 +73,9 @@ fn get_word_of_number(line: &str, index: usize) -> Option<String> {
     match line.get(index..last_index) {
         Some(slice) => NUMBERS.iter().find_map(|(number, value)| {
             if slice.starts_with(number) {
-                return Some(value.to_string());
+                return Some((*value).to_string());
             }
-            return None;
+            None
         }),
         None => None,
     }

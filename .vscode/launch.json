@@ -25,6 +25,27 @@
     {
       "type": "lldb",
       "request": "launch",
+      "name": "Debug day3",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=advent-of-code",
+          "--package=advent-of-code"
+        ],
+        "filter": {
+          "name": "advent-of-code",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "day3",
+        "./inputs/day3-part1.txt"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
       "name": "Debug unit tests in executable 'advent-of-code'",
       "cargo": {
         "args": [
