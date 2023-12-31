@@ -17,7 +17,7 @@ pub fn solve(path: PathBuf) {
     println!(
         "Sum of scratch cards generated: {}",
         multiply_cards(&scratch_cards)
-    )
+    );
 }
 
 #[derive(Debug, PartialEq)]
@@ -28,6 +28,7 @@ struct ScratchCard {
 
 impl ScratchCard {
     fn score(&self) -> i32 {
+        #[allow(clippy::cast_possible_truncation)]
         let winning_numbers_drawn = self.total_winning_numbers() as u32;
         if winning_numbers_drawn == 0 {
             return 0;

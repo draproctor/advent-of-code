@@ -14,7 +14,7 @@ pub fn solve(path: PathBuf) {
         .map(Result::unwrap)
         .collect::<Vec<String>>();
 
-    let symbol_tracker = symbol_tracker(content);
+    let symbol_tracker = symbol_tracker(&content);
     let part_number_sum = &symbol_tracker
         .values()
         .map(|numbers| numbers.iter().sum::<i32>())
@@ -34,8 +34,9 @@ pub fn solve(path: PathBuf) {
     println!("Power of parts touching gears: {power_of_parts_touching_gears}");
 }
 
-fn symbol_tracker(content: Vec<String>) -> HashMap<(i32, i32), Vec<i32>> {
-    let board = create_board(&content);
+#[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
+fn symbol_tracker(content: &[String]) -> HashMap<(i32, i32), Vec<i32>> {
+    let board = create_board(content);
     let symbol_positions = find_symbols(&board);
     let mut symbols_next_to_parts = HashMap::new();
 
@@ -56,6 +57,7 @@ fn symbol_tracker(content: Vec<String>) -> HashMap<(i32, i32), Vec<i32>> {
     symbols_next_to_parts
 }
 
+#[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 fn edge_of_number(row_index: i32, number: Match<'_>) -> HashSet<(i32, i32)> {
     [row_index - 1, row_index, row_index + 1]
         .iter()
@@ -74,6 +76,7 @@ fn create_board(lines: &[String]) -> Vec<Vec<char>> {
         .collect()
 }
 
+#[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 fn find_symbols(board: &[Vec<char>]) -> HashSet<(i32, i32)> {
     board
         .iter()
@@ -142,7 +145,7 @@ mod tests {
     #[test]
     fn total_engine_part_numbers() {
         let content = get_content();
-        let part_number_sum = super::symbol_tracker(content)
+        let part_number_sum = super::symbol_tracker(&content)
             .values()
             .map(|numbers| numbers.iter().sum::<i32>())
             .sum::<i32>();

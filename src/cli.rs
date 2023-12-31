@@ -24,4 +24,7 @@ pub enum Commands {
     Day4 {
         path: PathBuf,
     },
+    Day5 {
+        path: PathBuf,
+    },
 }
