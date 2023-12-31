@@ -6,6 +6,7 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 mod io;
 
 use clap::Parser;
@@ -20,5 +21,6 @@ fn main() {
         Commands::Day3 { path } => day3::solve(path),
         Commands::Day4 { path } => day4::solve(path),
         Commands::Day5 { path } => day5::solve(path),
+        Commands::Day6 { path } => day6::solve(path),
     }
 }
