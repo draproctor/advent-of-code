@@ -11,10 +11,9 @@ use nom::{
 
 pub fn solve(path: PathBuf) {
     let content = read_to_string(path).expect("Should read file");
-    let races = parse_file(&content);
     println!(
         "Product of winning times: {}",
-        races
+        parse_file(&content)
             .iter()
             .map(TimedRace::count_better_times)
             .product::<u64>(),
@@ -64,10 +63,7 @@ fn distance(input: &str) -> IResult<&str, u64> {
 
 fn fold_number(input: &str) -> IResult<&str, u64> {
     let (input, folded_num) = separated_list1(multispace1, digit1)(input)?;
-    Ok((
-        input,
-        folded_num.join("").parse::<u64>().expect("Parsed number"),
-    ))
+    Ok((input, folded_num.join("").parse().expect("Parsed number")))
 }
 
 #[derive(Debug, PartialEq)]
