@@ -3,8 +3,8 @@ use std::path::PathBuf;
 
 use nom::{
     bytes::complete::tag,
-    character::complete::{digit1, multispace0, multispace1, space1},
-    combinator::{map_res, recognize},
+    character::complete::{self, digit1, multispace0, multispace1, space1},
+    combinator::recognize,
     multi::separated_list1,
     sequence::{delimited, preceded, separated_pair, tuple},
     IResult,
@@ -67,7 +67,8 @@ impl From<&str> for ScratchCard {
     /// Numbers on the scratch card are on the right side.
     #[allow(clippy::match_wild_err_arm)]
     fn from(line: &str) -> Self {
-        let (_, (winning, drawn)) = parse_line(line).unwrap_or_else(|_| panic!("Should parse '{line}'"));
+        let (_, (winning, drawn)) =
+            parse_line(line).unwrap_or_else(|_| panic!("Should parse '{line}'"));
         Self { winning, drawn }
     }
 }
@@ -90,7 +91,7 @@ fn number_sep(input: &str) -> IResult<&str, &str> {
 /// Parse a sequence of one or more digits separated by spaces into a `Vec<i32>`.
 /// The input string must start with a number.
 fn number_sequence(input: &str) -> IResult<&str, Vec<i32>> {
-    separated_list1(multispace1, map_res(digit1, str::parse))(input)
+    separated_list1(multispace1, complete::i32)(input)
 }
 
 fn multiply_cards(scratch_cards: &[ScratchCard]) -> usize {
