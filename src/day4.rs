@@ -1,7 +1,14 @@
 use std::fs::read_to_string;
 use std::path::PathBuf;
 
-use regex::{Match, Regex};
+use nom::{
+    bytes::complete::tag,
+    character::complete::{digit1, multispace0, multispace1, space1},
+    combinator::{map_res, recognize},
+    multi::separated_list1,
+    sequence::{delimited, preceded, separated_pair, tuple},
+    IResult,
+};
 
 pub fn solve(path: PathBuf) {
     let content = read_to_string(path)
@@ -27,8 +34,8 @@ struct ScratchCard {
 }
 
 impl ScratchCard {
+    #[allow(clippy::cast_possible_truncation)]
     fn score(&self) -> i32 {
-        #[allow(clippy::cast_possible_truncation)]
         let winning_numbers_drawn = self.total_winning_numbers() as u32;
         if winning_numbers_drawn == 0 {
             return 0;
@@ -58,25 +65,32 @@ impl From<&str> for ScratchCard {
     /// ```
     /// Winning numbers are on the left side of the `|`.
     /// Numbers on the scratch card are on the right side.
+    #[allow(clippy::match_wild_err_arm)]
     fn from(line: &str) -> Self {
-        let number_pattern = Regex::new(r"\d+").unwrap();
-        let parser = |mat: Match| mat.as_str().parse::<i32>().unwrap();
-        let winning_part = line
-            .chars()
-            .skip_while(|ch| *ch != ':')
-            .take_while(|ch| *ch != '|')
-            .collect::<String>();
-        let winning = number_pattern
-            .find_iter(&winning_part)
-            .map(parser)
-            .collect::<Vec<i32>>();
-        let drawn_part = line.chars().skip_while(|ch| *ch != '|').collect::<String>();
-        let drawn = number_pattern
-            .find_iter(&drawn_part)
-            .map(parser)
-            .collect::<Vec<i32>>();
+        let (_, (winning, drawn)) = parse_line(line).unwrap_or_else(|_| panic!("Should parse '{line}'"));
         Self { winning, drawn }
     }
+}
+
+fn parse_line(input: &str) -> IResult<&str, (Vec<i32>, Vec<i32>)> {
+    separated_pair(preceded(card, number_sequence), number_sep, number_sequence)(input)
+}
+
+/// Parses a card prefix from a string. Whitespace after the `:` is greedily matched.
+fn card(input: &str) -> IResult<&str, &str> {
+    let char_seq = (tag("Card"), space1, digit1, tag(":"), space1);
+    recognize(tuple(char_seq))(input)
+}
+
+/// Parse the separator between the winning and drawn numbers: ` | `.
+fn number_sep(input: &str) -> IResult<&str, &str> {
+    delimited(multispace0, tag("|"), multispace0)(input)
+}
+
+/// Parse a sequence of one or more digits separated by spaces into a `Vec<i32>`.
+/// The input string must start with a number.
+fn number_sequence(input: &str) -> IResult<&str, Vec<i32>> {
+    separated_list1(multispace1, map_res(digit1, str::parse))(input)
 }
 
 fn multiply_cards(scratch_cards: &[ScratchCard]) -> usize {
@@ -114,7 +128,23 @@ mod tests {
     }
 
     #[test]
-    fn parsing() {
+    fn card_parsing() {
+        let expected_values = [
+            "Card 1: ",
+            "Card 2: ",
+            "Card 3:  ",
+            "Card 4: ",
+            "Card 5: ",
+            "Card 6: ",
+        ];
+        for (line, expected) in input_file().iter().zip(expected_values.iter()) {
+            let (_, actual) = super::card(line).expect("Should parse card with number and space");
+            assert_eq!(actual, *expected);
+        }
+    }
+
+    #[test]
+    fn scratch_card_parsing() {
         let actual: Vec<ScratchCard> = ScratchCard::from_lines(&input_file());
         let expected = vec![
             ScratchCard {

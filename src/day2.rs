@@ -257,7 +257,7 @@ mod tests {
 
     #[test]
     fn game_power() {
-        [
+        for (input, expected_power) in &[
             ("Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green", 48),
             (
                 "Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue",
@@ -272,13 +272,11 @@ mod tests {
                 630,
             ),
             ("Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green", 36),
-        ]
-        .iter()
-        .for_each(|(input, expected_power)| {
+        ] {
             assert_eq!(
-                Game::from(input.to_string()).power(),
+                Game::from((*input).to_string()).power(),
                 expected_power.to_owned()
-            )
-        });
+            );
+        }
     }
 }

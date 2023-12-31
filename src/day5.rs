@@ -34,7 +34,7 @@ fn follow_map<'a>(
     destination: &'a str,
     almanac_ranges: Vec<AlmanacRange<'a>>,
 ) -> (u64, &'a str) {
-    print!("{destination} {:10} ", value);
+    print!("{destination} {value:10} ");
     if let Some(almanac_range) = almanac_ranges
         .iter()
         .find(|almanac_range| almanac_range.source == destination)
