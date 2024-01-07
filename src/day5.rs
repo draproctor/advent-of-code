@@ -15,7 +15,7 @@ pub fn solve(path: PathBuf) {
     let (_, (seeds, almanac_ranges)) = parse_file(&content).expect("Should Parse");
     let min_location = seeds
         .into_iter()
-        .map(|seed_num| follow_map(seed_num, "seed", almanac_ranges.clone()).0)
+        .map(|seed_num| follow_map(seed_num, "seed", &almanac_ranges))
         .min()
         .unwrap();
     println!("Minimum location: {min_location}");
@@ -29,22 +29,14 @@ fn parse_file(content: &str) -> IResult<&str, (Vec<u64>, Vec<AlmanacRange>)> {
     )(content)
 }
 
-fn follow_map<'a>(
-    value: u64,
-    destination: &'a str,
-    almanac_ranges: Vec<AlmanacRange<'a>>,
-) -> (u64, &'a str) {
+fn follow_map(value: u64, destination: &str, almanac_ranges: &[AlmanacRange]) -> u64 {
     print!("{destination} {value:10} ");
-    if let Some(almanac_range) = almanac_ranges
-        .iter()
-        .find(|almanac_range| almanac_range.source == destination)
-    {
-        let new_value = almanac_range.resolve(value);
-        let new_destination = almanac_range.destination;
-        follow_map(new_value, new_destination, almanac_ranges)
+    if let Some(almanac_range) = almanac_ranges.iter().find(|ar| ar.source == destination) {
+        let value = almanac_range.resolve(value);
+        follow_map(value, &almanac_range.destination, almanac_ranges)
     } else {
         println!();
-        (value, destination)
+        value
     }
 }
 
@@ -53,13 +45,13 @@ fn seeds(line: &str) -> IResult<&str, Vec<u64>> {
 }
 
 #[derive(Clone)]
-struct AlmanacRange<'a> {
-    source: &'a str,
-    destination: &'a str,
+struct AlmanacRange {
+    source: String,
+    destination: String,
     ranges: Vec<(Range<u64>, u64)>,
 }
 
-impl AlmanacRange<'_> {
+impl AlmanacRange {
     /// Given a source number, return the destination value.
     /// If the source number is in a mapped range, the mapped value is returned.
     /// Otherwise, the source number is returned as-is.
@@ -88,8 +80,8 @@ impl AlmanacRange<'_> {
         Ok((
             input,
             AlmanacRange {
-                source,
-                destination,
+                source: String::from(source),
+                destination: String::from(destination),
                 ranges,
             },
         ))
