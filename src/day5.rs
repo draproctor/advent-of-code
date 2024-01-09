@@ -12,7 +12,7 @@ use nom::{
 
 pub fn solve(path: PathBuf) {
     let content = read_to_string(path).expect("Should read file");
-    let (_, (seeds, almanac_ranges)) = parse_file(&content).expect("Should Parse");
+    let (seeds, almanac_ranges) = parse_file(&content);
     let min_location = seeds
         .into_iter()
         .map(|seed_num| follow_map(seed_num, "seed", &almanac_ranges))
@@ -21,12 +21,14 @@ pub fn solve(path: PathBuf) {
     println!("Minimum location: {min_location}");
 }
 
-fn parse_file(content: &str) -> IResult<&str, (Vec<u64>, Vec<AlmanacRange>)> {
-    separated_pair(
+fn parse_file(content: &str) -> (Vec<u64>, Vec<AlmanacRange>) {
+    let mut parser = separated_pair(
         seeds,
         pair(newline, newline),
         separated_list1(newline, AlmanacRange::complete_mapping),
-    )(content)
+    );
+    let (_, (seeds, ranges)) = parser(content).expect("Should parse file");
+    (seeds, ranges)
 }
 
 fn follow_map(value: u64, destination: &str, almanac_ranges: &[AlmanacRange]) -> u64 {
