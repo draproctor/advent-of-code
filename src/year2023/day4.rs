@@ -10,7 +10,9 @@ use nom::{
     IResult,
 };
 
-pub fn solve(path: PathBuf) {
+use crate::solution;
+
+solution!(|path| {
     let content = read_to_string(path)
         .unwrap()
         .lines()
@@ -25,7 +27,7 @@ pub fn solve(path: PathBuf) {
         "Sum of scratch cards generated: {}",
         multiply_cards(&scratch_cards)
     );
-}
+});
 
 #[derive(Debug, PartialEq)]
 struct ScratchCard {

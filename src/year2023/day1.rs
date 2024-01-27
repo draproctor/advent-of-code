@@ -2,6 +2,7 @@ use std::fs::File;
 use std::path::PathBuf;
 
 use crate::io::LineExtractor;
+use crate::solution;
 
 const NUMBERS: [(&str, &str); 9] = [
     ("one", "1"),
@@ -15,14 +16,14 @@ const NUMBERS: [(&str, &str); 9] = [
     ("nine", "9"),
 ];
 
-pub fn solve(file_path: PathBuf) {
-    let total: i32 = File::open(file_path)
+solution!(|path| {
+    let total: i32 = File::open(path)
         .expect("Cannot read the file")
         .lines()
         .map(|line| parse_line(&line.unwrap()))
         .sum();
     println!("The total is {total}");
-}
+});
 
 /// Given a line in a file, find the first and last numbers in the line. The digits are combined
 /// to form a two digit number.

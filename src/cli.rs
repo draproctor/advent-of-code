@@ -1,33 +1,16 @@
 use std::path::PathBuf;
 
-use clap::{Parser, Subcommand};
+use clap::Parser;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-    #[command(subcommand)]
-    pub command: Commands,
-}
+    #[clap(short)]
+    pub year: String,
 
-#[derive(Subcommand)]
-pub enum Commands {
-    /// Adds files to myapp
-    Day1 {
-        path: PathBuf,
-    },
-    Day2 {
-        path: PathBuf,
-    },
-    Day3 {
-        path: PathBuf,
-    },
-    Day4 {
-        path: PathBuf,
-    },
-    Day5 {
-        path: PathBuf,
-    },
-    Day6 {
-        path: PathBuf,
-    },
+    #[clap(short)]
+    pub day: String,
+
+    #[clap(short)]
+    pub input_file: PathBuf,
 }

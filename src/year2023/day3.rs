@@ -4,10 +4,11 @@ use std::fs::File;
 use std::path::PathBuf;
 
 use crate::io::LineExtractor;
+use crate::solution;
 
 const NON_SYMBOLS: &str = "01234566789.";
 
-pub fn solve(path: PathBuf) {
+solution!(|path| {
     let content = File::open(path)
         .expect("Cannot open file")
         .lines()
@@ -32,7 +33,7 @@ pub fn solve(path: PathBuf) {
         .sum::<i32>();
     println!("Sum of part numbers touching symbols: {part_number_sum}");
     println!("Power of parts touching gears: {power_of_parts_touching_gears}");
-}
+});
 
 #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 fn symbol_tracker(content: &[String]) -> HashMap<(i32, i32), Vec<i32>> {

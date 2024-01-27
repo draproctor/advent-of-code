@@ -2,6 +2,8 @@
 // rvodden is very clever and helped me a lot. Now I know `nom` is the perfect library for AoC!
 use std::{fs::read_to_string, ops::Range, path::PathBuf};
 
+use crate::solution;
+
 use nom::{
     bytes::complete::tag,
     character::complete::{self, alpha1, newline, space1},
@@ -9,6 +11,17 @@ use nom::{
     sequence::{pair, preceded, separated_pair, terminated, tuple},
     IResult,
 };
+
+solution!(|path| {
+    let content = read_to_string(path).expect("Should read file");
+    let (seeds, almanac_ranges) = parse_file(&content);
+    let min_location = seeds
+        .into_iter()
+        .map(|seed_num| follow_map(seed_num, "seed", &almanac_ranges))
+        .min()
+        .unwrap();
+    println!("Minimum location: {min_location}");
+});
 
 pub fn solve(path: PathBuf) {
     let content = read_to_string(path).expect("Should read file");

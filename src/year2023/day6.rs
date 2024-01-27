@@ -9,7 +9,9 @@ use nom::{
     IResult,
 };
 
-pub fn solve(path: PathBuf) {
+use crate::solution;
+
+solution!(|path| {
     let content = read_to_string(path).expect("Should read file");
     println!(
         "Product of winning times: {}",
@@ -23,7 +25,7 @@ pub fn solve(path: PathBuf) {
         "Number of winning times (part 2): {}",
         parse_file_p2(&content).count_better_times(),
     );
-}
+});
 
 fn parse_file(content: &str) -> Vec<TimedRace> {
     let (_, (times, distances)) =

@@ -1,26 +1,28 @@
 #![warn(clippy::pedantic)]
 
 mod cli;
-mod day1;
-mod day2;
-mod day3;
-mod day4;
-mod day5;
-mod day6;
 mod io;
+pub mod solver;
+pub mod year2015;
+pub mod year2023;
+
+use std::collections::HashMap;
 
 use clap::Parser;
-use cli::{Cli, Commands};
+use cli::Cli;
+
+use crate::solver::Solver;
+
+include!(concat!(env!("OUT_DIR"), "/module_selection.rs"));
 
 fn main() {
     let args = Cli::parse();
 
-    match args.command {
-        Commands::Day1 { path } => day1::solve(path),
-        Commands::Day2 { path } => day2::solve(&path),
-        Commands::Day3 { path } => day3::solve(path),
-        Commands::Day4 { path } => day4::solve(path),
-        Commands::Day5 { path } => day5::solve(path),
-        Commands::Day6 { path } => day6::solve(path),
+    let solution_selector: HashMap<String, Box<(dyn Solver + 'static)>> = solution_selector();
+    let solution_lookup = format!("year{}::day{}", args.year, args.day);
+
+    match solution_selector.get(&solution_lookup) {
+        Some(solver) => solver.solve(args.input_file),
+        None => println!("There is no solution written for {solution_lookup} yet."),
     }
 }

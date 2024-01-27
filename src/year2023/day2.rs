@@ -2,13 +2,14 @@ use std::fs::File;
 use std::path::PathBuf;
 
 use crate::io::LineExtractor;
+use crate::solution;
 
 const RED_LIMIT: i32 = 12;
 const GREEN_LIMIT: i32 = 13;
 const BLUE_LIMIT: i32 = 14;
 
-pub fn solve(path: &PathBuf) {
-    let id_total: i32 = File::open(path)
+solution!(|path: PathBuf| {
+    let id_total: i32 = File::open(path.clone())
         .expect("Cannot read the file")
         .lines()
         .map(|line| Game::from(line.unwrap()))
@@ -28,7 +29,7 @@ pub fn solve(path: &PathBuf) {
         .map(|line| Game::from(line.unwrap()).power())
         .sum();
     println!("The total power of the games is {power_total}");
-}
+});
 
 /// Represents a game an elf wants to play with us.
 ///
