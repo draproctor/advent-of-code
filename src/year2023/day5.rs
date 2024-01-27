@@ -23,17 +23,6 @@ solution!(|path| {
     println!("Minimum location: {min_location}");
 });
 
-pub fn solve(path: PathBuf) {
-    let content = read_to_string(path).expect("Should read file");
-    let (seeds, almanac_ranges) = parse_file(&content);
-    let min_location = seeds
-        .into_iter()
-        .map(|seed_num| follow_map(seed_num, "seed", &almanac_ranges))
-        .min()
-        .unwrap();
-    println!("Minimum location: {min_location}");
-}
-
 fn parse_file(content: &str) -> (Vec<u64>, Vec<AlmanacRange>) {
     let mut parser = separated_pair(
         seeds,

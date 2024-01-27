@@ -19,7 +19,7 @@ fn main() {
         .flat_map(|(year_module, day_modules)| {
             day_modules.into_iter().map(move |day| {
                 let key = format!("\"{year_module}::{day}\".to_string()");
-                let value = format!("Box::new({year_module}::{day}::Solution)");
+                let value = format!("Box::new({year_module}::{day}::solve)");
                 format!("    selector.insert({key}, {value});")
             })
         })
@@ -28,8 +28,8 @@ fn main() {
 
     let mut line_writer = LineWriter::new(File::create(dest_path).unwrap());
     let lines = vec![
-        "pub fn solution_selector() -> HashMap<String, Box<dyn Solver>> {\n",
-        "    let mut selector: HashMap<String, Box<dyn Solver>> = HashMap::new();\n",
+        "pub fn solution_selector() -> HashMap<String, Box<dyn Fn(PathBuf)>> {\n",
+        "    let mut selector: HashMap<String, Box<dyn Fn(PathBuf)>> = HashMap::new();\n",
         &lookup_insert_statements,
         "\n",
         "    selector\n",
