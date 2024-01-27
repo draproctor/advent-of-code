@@ -26,6 +26,7 @@ fn main() {
         .collect::<Vec<String>>()
         .join("\n");
 
+    // I am not proud of this but it works.
     let mut line_writer = LineWriter::new(File::create(dest_path).unwrap());
     let lines = vec![
         "pub fn solution_selector() -> HashMap<String, Box<dyn Fn(PathBuf)>> {\n",
@@ -33,9 +34,9 @@ fn main() {
         &lookup_insert_statements,
         "\n",
         "    selector\n",
-        "}",
+        "}\n",
     ];
-    for line in &lines {
+    for line in lines.into_iter() {
         line_writer.write_all(line.as_bytes()).unwrap();
     }
 }
